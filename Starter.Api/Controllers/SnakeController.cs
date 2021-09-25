@@ -42,6 +42,10 @@ namespace Starter.Api.Controllers
             return Ok();
         }
 
+        private bool PointContainsSnake(GameStatusRequest gameStatusRequest, Point pt)
+        {
+            return gameStatusRequest.Board.Snakes.Any(s => s.Body.Any(b => b.X != pt.X && b.Y != pt.Y));
+        }
 
         /// <summary>
         /// This request will be sent for every turn of the game.
@@ -57,18 +61,18 @@ namespace Starter.Api.Controllers
             var downPoint = new Point(curCoords.X, curCoords.Y - 1);
             var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
             var rightPoint = new Point(curCoords.X + 1, curCoords.Y);
-            if (upPoint.Y < gameStatusRequest.Board.Height && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != upPoint)))
+            if (upPoint.Y < gameStatusRequest.Board.Height && !PointContainsSnake(gameStatusRequest, upPoint))
                 direction.Add("up");
-            if (downPoint.Y >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != downPoint)))
+            if (downPoint.Y >= 0 && !PointContainsSnake(gameStatusRequest, downPoint))
                 direction.Add("down");
-            if (leftPoint.X >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != leftPoint)))
+            if (leftPoint.X >= 0 && !PointContainsSnake(gameStatusRequest, leftPoint))
                 direction.Add("left");
-            if (rightPoint.X < gameStatusRequest.Board.Width && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != rightPoint)))
+            if (rightPoint.X < gameStatusRequest.Board.Width && !PointContainsSnake(gameStatusRequest, rightPoint))
                 direction.Add("right");
 
             if(!direction.Any())
             {
-                direction.Add("up"); // will run into something
+             //   direction.Add("up"); // will run into something
             }
 
             var rng = new Random();
