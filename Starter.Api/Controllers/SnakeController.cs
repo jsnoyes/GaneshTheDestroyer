@@ -50,7 +50,7 @@ namespace Starter.Api.Controllers
         [HttpPost("move")]
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
-            var direction = new List<string> {"down", "left", "right", "up"};
+            var direction = new List<string> {"down", "left", "right", "up"}; 
             var rng = new Random();
 
             var response = new MoveResponse
