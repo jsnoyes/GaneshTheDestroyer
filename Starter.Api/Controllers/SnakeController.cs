@@ -42,9 +42,23 @@ namespace Starter.Api.Controllers
             return Ok();
         }
 
-        private bool PointContainsSnake(GameStatusRequest gameStatusRequest, Point pt)
+        private List<Point> GetOpenNeighbors(GameStatusRequest gameStatusRequest, Hashset<Point> occupied, Point curCoords)
         {
-            return gameStatusRequest.Board.Snakes.Any(s => s.Body.Any(b => b.X == pt.X && b.Y == pt.Y));
+            var neighbors = new List<Point>();
+            var upPoint = new Point(curCoords.X, curCoords.Y + 1);
+            var downPoint = new Point(curCoords.X, curCoords.Y - 1);
+            var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
+            var rightPoint = new Point(curCoords.X + 1, curCoords.Y);
+            if (upPoint.Y < gameStatusRequest.Board.Height && !occupied.Contains(upPoint))
+                neighbors.Add(upPoint);
+            if (downPoint.Y >= 0 && !occupied.Contains(downPoint))
+                neighbors.Add(downPoint);
+            if (leftPoint.X >= 0 && !occupied.Contains(leftPoint))
+                neighbors.Add(leftPoint);
+            if (rightPoint.X < gameStatusRequest.Board.Width && !occupied.Contains(rightPoint))
+                neighbors.Add(rightPoint);
+
+            return neighbors;
         }
 
         /// <summary>
@@ -55,20 +69,54 @@ namespace Starter.Api.Controllers
         [HttpPost("move")]
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
+            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body).ToHashset();
             var direction = new List<string>(); // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
             var upPoint = new Point(curCoords.X, curCoords.Y + 1);
             var downPoint = new Point(curCoords.X, curCoords.Y - 1);
             var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
             var rightPoint = new Point(curCoords.X + 1, curCoords.Y);
-            if (upPoint.Y < gameStatusRequest.Board.Height && !PointContainsSnake(gameStatusRequest, upPoint))
-                direction.Add("up");
-            if (downPoint.Y >= 0 && !PointContainsSnake(gameStatusRequest, downPoint))
-                direction.Add("down");
-            if (leftPoint.X >= 0 && !PointContainsSnake(gameStatusRequest, leftPoint))
-                direction.Add("left");
-            if (rightPoint.X < gameStatusRequest.Board.Width && !PointContainsSnake(gameStatusRequest, rightPoint))
-                direction.Add("right");
+            var maxNeighborsOpen = 0;
+            if (upPoint.Y < gameStatusRequest.Board.Height && !occupied.Contains(upPoint))
+            {
+                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, upPoint);
+                if(openNeighbors.Count() > maxOpenNeighbors)
+                { 
+                    direction.Clear();
+                    direction.Add("up");
+                    maxOpenNeighbors = openNeighbors.Count();
+                }
+            }
+            if (downPoint.Y >= 0 && !occupied.Contains(downPoint))
+            {
+                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, downPoint);
+                if(openNeighbors.Count() > maxOpenNeighbors)
+                { 
+                    direction.Clear();
+                    direction.Add("down");
+                    maxOpenNeighbors = openNeighbors.Count();
+                }
+            }
+            if (leftPoint.X >= 0 && !occupied.Contains(leftPoint))
+            {
+                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, leftPoint);
+                if(openNeighbors.Count() > maxOpenNeighbors)
+                { 
+                    direction.Clear();
+                    direction.Add("left");
+                    maxOpenNeighbors = openNeighbors.Count();
+                }
+            }
+            if (rightPoint.X < gameStatusRequest.Board.Width && !occupied.Contains(rightPoint))
+            {
+                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, rightPoint);
+                if(openNeighbors.Count() > maxOpenNeighbors)
+                { 
+                    direction.Clear();
+                    direction.Add("right");
+                    maxOpenNeighbors = openNeighbors.Count();
+                }
+            }
 
             if(!direction.Any())
             {
