@@ -70,7 +70,7 @@ namespace Starter.Api.Controllers
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
             var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body).ToHashSet();
-            var direction = new List<string>(); // {"down", "left", "right", "up"};
+            var direction = "up"; // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
             var upPoint = new Point(curCoords.X, curCoords.Y + 1);
             var downPoint = new Point(curCoords.X, curCoords.Y - 1);
@@ -82,8 +82,7 @@ namespace Starter.Api.Controllers
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, upPoint);
                 if(openNeighbors.Count() > maxOpenNeighbors)
                 { 
-                    direction.Clear();
-                    direction.Add("up");
+                    direction = "up";
                     maxOpenNeighbors = openNeighbors.Count();
                 }
             }
@@ -91,9 +90,8 @@ namespace Starter.Api.Controllers
             {
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, downPoint);
                 if(openNeighbors.Count() > maxOpenNeighbors)
-                { 
-                    direction.Clear();
-                    direction.Add("down");
+                {
+                    direction = "down";
                     maxOpenNeighbors = openNeighbors.Count();
                 }
             }
@@ -101,9 +99,8 @@ namespace Starter.Api.Controllers
             {
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, leftPoint);
                 if(openNeighbors.Count() > maxOpenNeighbors)
-                { 
-                    direction.Clear();
-                    direction.Add("left");
+                {
+                    direction = "left";
                     maxOpenNeighbors = openNeighbors.Count();
                 }
             }
@@ -111,23 +108,15 @@ namespace Starter.Api.Controllers
             {
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, rightPoint);
                 if(openNeighbors.Count() > maxOpenNeighbors)
-                { 
-                    direction.Clear();
-                    direction.Add("right");
+                {
+                    direction = "right";
                     maxOpenNeighbors = openNeighbors.Count();
                 }
             }
 
-            if(!direction.Any())
-            {
-             //   direction.Add("up"); // will run into something
-            }
-
-            var rng = new Random();
-
             var response = new MoveResponse
             {
-                Move = direction[rng.Next(direction.Count)],
+                Move = direction,
                 Shout = "I am moving!"
             };
             return Ok(response);
