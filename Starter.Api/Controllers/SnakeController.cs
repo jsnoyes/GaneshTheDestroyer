@@ -70,7 +70,7 @@ namespace Starter.Api.Controllers
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
             var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body).ToHashSet();
-            Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList());
+            Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList()));
             var direction = "up"; // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
             var upPoint = new Point(curCoords.X, curCoords.Y + 1);
