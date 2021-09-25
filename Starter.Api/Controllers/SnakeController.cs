@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Starter.Api.Requests;
 using Starter.Api.Responses;
@@ -50,7 +51,21 @@ namespace Starter.Api.Controllers
         [HttpPost("move")]
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
-            var direction = new List<string> {"down", "left", "right", "up"}; 
+            var direction = new List<string>(); // {"down", "left", "right", "up"};
+            var curCoords = gameStatusRequest.You.Head;
+            var upPoint = new Point(curCoords.X - 1, curCoords.Y);
+            var downPoint = new Point(curCoords.X + 1, curCoords.Y);
+            var leftPoint = new Point(curCoords.X, curCoords.Y - 1);
+            var rightPoint = new Point(curCoords.X, curCoords.Y + 1);
+            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != upPoint)))
+                direction.Add("up");
+            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != downPoint)))
+                direction.Add("down");
+            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != leftPoint)))
+                direction.Add("left");
+            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != rightPoint)))
+                direction.Add("right");
+
             var rng = new Random();
 
             var response = new MoveResponse
