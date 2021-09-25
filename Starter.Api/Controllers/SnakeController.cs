@@ -53,17 +53,17 @@ namespace Starter.Api.Controllers
         {
             var direction = new List<string>(); // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
-            var upPoint = new Point(curCoords.X - 1, curCoords.Y);
-            var downPoint = new Point(curCoords.X + 1, curCoords.Y);
-            var leftPoint = new Point(curCoords.X, curCoords.Y - 1);
-            var rightPoint = new Point(curCoords.X, curCoords.Y + 1);
-            if (upPoint.X >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != upPoint)))
+            var upPoint = new Point(curCoords.X, curCoords.Y + 1);
+            var downPoint = new Point(curCoords.X, curCoords.Y - 1);
+            var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
+            var rightPoint = new Point(curCoords.X + 1, curCoords.Y);
+            if (upPoint.Y < gameStatusRequest.Board.Height && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != upPoint)))
                 direction.Add("up");
-            if (downPoint.X < gameStatusRequest.Board.Height && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != downPoint)))
+            if (downPoint.Y >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != downPoint)))
                 direction.Add("down");
-            if (leftPoint.Y >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != leftPoint)))
+            if (leftPoint.X >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != leftPoint)))
                 direction.Add("left");
-            if (rightPoint.Y < gameStatusRequest.Board.Width && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != rightPoint)))
+            if (rightPoint.X < gameStatusRequest.Board.Width && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != rightPoint)))
                 direction.Add("right");
 
             if(!direction.Any())
