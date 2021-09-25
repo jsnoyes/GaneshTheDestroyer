@@ -1,4 +1,6 @@
-﻿namespace Starter.Core
+using System;﻿
+
+namespace Starter.Core
 {
     public class Point
     {
@@ -11,7 +13,7 @@
             Y = y;
         }
 
-   public override bool Equals(Object obj)
+   public override bool Equals(object obj)
    {
       //Check for null and compare run-time types.
       if ((obj == null) || ! this.GetType().Equals(obj.GetType()))
