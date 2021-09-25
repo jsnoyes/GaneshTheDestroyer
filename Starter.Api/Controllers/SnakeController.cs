@@ -76,7 +76,7 @@ namespace Starter.Api.Controllers
             var downPoint = new Point(curCoords.X, curCoords.Y - 1);
             var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
             var rightPoint = new Point(curCoords.X + 1, curCoords.Y);
-            var maxNeighborsOpen = 0;
+            var maxOpenNeighbors = 0;
             if (upPoint.Y < gameStatusRequest.Board.Height && !occupied.Contains(upPoint))
             {
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, upPoint);
