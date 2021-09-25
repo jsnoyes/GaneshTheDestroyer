@@ -42,7 +42,7 @@ namespace Starter.Api.Controllers
             return Ok();
         }
 
-        private List<Point> GetOpenNeighbors(GameStatusRequest gameStatusRequest, Hashset<Point> occupied, Point curCoords)
+        private List<Point> GetOpenNeighbors(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, Point curCoords)
         {
             var neighbors = new List<Point>();
             var upPoint = new Point(curCoords.X, curCoords.Y + 1);
@@ -69,7 +69,7 @@ namespace Starter.Api.Controllers
         [HttpPost("move")]
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
-            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body).ToHashset();
+            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body).ToHashSet();
             var direction = new List<string>(); // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
             var upPoint = new Point(curCoords.X, curCoords.Y + 1);
