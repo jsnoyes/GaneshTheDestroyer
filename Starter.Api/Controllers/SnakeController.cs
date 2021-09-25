@@ -44,7 +44,7 @@ namespace Starter.Api.Controllers
 
         private bool PointContainsSnake(GameStatusRequest gameStatusRequest, Point pt)
         {
-            return gameStatusRequest.Board.Snakes.Any(s => s.Body.Any(b => b.X != pt.X && b.Y != pt.Y));
+            return gameStatusRequest.Board.Snakes.Any(s => s.Body.Any(b => b.X == pt.X && b.Y == pt.Y));
         }
 
         /// <summary>
