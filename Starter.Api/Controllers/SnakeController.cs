@@ -57,14 +57,19 @@ namespace Starter.Api.Controllers
             var downPoint = new Point(curCoords.X + 1, curCoords.Y);
             var leftPoint = new Point(curCoords.X, curCoords.Y - 1);
             var rightPoint = new Point(curCoords.X, curCoords.Y + 1);
-            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != upPoint)))
+            if (upPoint.X >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != upPoint)))
                 direction.Add("up");
-            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != downPoint)))
+            if (downPoint.X < gameStatusRequest.Board.Height && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != downPoint)))
                 direction.Add("down");
-            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != leftPoint)))
+            if (leftPoint.Y >= 0 && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != leftPoint)))
                 direction.Add("left");
-            if (gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != rightPoint)))
+            if (rightPoint.Y < gameStatusRequest.Board.Width && gameStatusRequest.Board.Snakes.All(s => s.Body.All(b => b != rightPoint)))
                 direction.Add("right");
+
+            if(!direction.Any())
+            {
+                direction.Add("up"); // will run into something
+            }
 
             var rng = new Random();
 
