@@ -73,12 +73,24 @@ namespace Starter.Api.Controllers
             Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList()));
             var direction = "up"; // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
-            var upPoint = new Point(curCoords.X, curCoords.Y + 1);
+         /*   var upPoint = new Point(curCoords.X, curCoords.Y + 1);
             var downPoint = new Point(curCoords.X, curCoords.Y - 1);
             var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
-            var rightPoint = new Point(curCoords.X + 1, curCoords.Y);
+            var rightPoint = new Point(curCoords.X + 1, curCoords.Y);*/
             var maxOpenNeighbors = 0;
-            if (upPoint.Y < gameStatusRequest.Board.Height && !occupied.Contains(upPoint))
+            var openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
+            var best = openNeighs.FirstOrDefault();
+            foreach(var neighbor in openNeighs)
+            {
+                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
+                if (openNeighbors.Count() > maxOpenNeighbors)
+                {
+                    best = neighbor;
+                    maxOpenNeighbors = openNeighbors.Count();
+                }
+            }
+
+            /*if (upPoint.Y < gameStatusRequest.Board.Height && !occupied.Contains(upPoint))
             {
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, upPoint);
                 if(openNeighbors.Count() > maxOpenNeighbors)
@@ -114,7 +126,15 @@ namespace Starter.Api.Controllers
                     direction = "right";
                     maxOpenNeighbors = openNeighbors.Count();
                 }
-            }
+            }*/
+            if (best.X > curCoords.X)
+                direction = "right";
+            else if (best.X < curCoords.X)
+                direction = "left";
+            else if (best.Y > curCoords.Y)
+                direction = "up";
+            else
+                direction = "down";
 
             var response = new MoveResponse
             {
