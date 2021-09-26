@@ -61,6 +61,32 @@ namespace Starter.Api.Controllers
             return neighbors;
         }
 
+        private int GetOpenSpace(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, Point pointToTest)
+        {
+            var minSpaceNeeded = gameStatusRequest.You.Body.Count();
+            var totalSpace = 0;
+            var tempOccupied = occupied.ToHashSet();
+            var toCheck = new Queue<Point>();
+            toCheck.Enqueue(pointToTest);
+            while (toCheck.Any() && totalSpace < minSpaceNeeded)
+            {
+                var point = toCheck.Dequeue();
+                if (tempOccupied.Contains(point))
+                    continue;
+
+                totalSpace++;
+                tempOccupied.Add(point);
+
+                var neighbors = GetOpenNeighbors(gameStatusRequest, occupied, point);
+                foreach(var neighbor in neighbors)
+                {
+                    toCheck.Enqueue(neighbor);
+                }
+            }
+
+            return totalSpace;
+        }
+
         /// <summary>
         /// This request will be sent for every turn of the game.
         /// Use the information provided to determine how your
@@ -73,68 +99,45 @@ namespace Starter.Api.Controllers
             Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList()));
             var direction = "up"; // {"down", "left", "right", "up"};
             var curCoords = gameStatusRequest.You.Head;
-         /*   var upPoint = new Point(curCoords.X, curCoords.Y + 1);
-            var downPoint = new Point(curCoords.X, curCoords.Y - 1);
-            var leftPoint = new Point(curCoords.X - 1, curCoords.Y);
-            var rightPoint = new Point(curCoords.X + 1, curCoords.Y);*/
-            var maxOpenNeighbors = 0;
             var openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
-            var best = openNeighs.FirstOrDefault();
+            var maxOpenSpace = 0;
+            var maxOpenSpaceNeighbor = openNeighs.FirstOrDefault();
             foreach(var neighbor in openNeighs)
             {
-                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
-                var count = openNeighbors.Count();
-                if (count > 1 && gameStatusRequest.Board.Food.Any(f => f.X == neighbor.X && f.Y == neighbor.Y))
-                    count++;
-                if (count > maxOpenNeighbors)
-                {
-                    best = neighbor;
-                    maxOpenNeighbors = count;
-                }
-            }
+                var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor);
 
-            /*if (upPoint.Y < gameStatusRequest.Board.Height && !occupied.Contains(upPoint))
-            {
-                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, upPoint);
-                if(openNeighbors.Count() > maxOpenNeighbors)
-                { 
-                    direction = "up";
-                    maxOpenNeighbors = openNeighbors.Count();
-                }
-            }
-            if (downPoint.Y >= 0 && !occupied.Contains(downPoint))
-            {
-                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, downPoint);
-                if(openNeighbors.Count() > maxOpenNeighbors)
+                // If there is enough room and there is food.
+                if(openSpace > gameStatusRequest.You.Body.Count() + 1 && gameStatusRequest.Board.Food.Any(f => f.X == neighbor.X && f.Y == neighbor.Y))
                 {
-                    Console.WriteLine("Down: " + downPoint.X + "," + downPoint.Y);
-                    direction = "down";
-                    maxOpenNeighbors = openNeighbors.Count();
+                    maxOpenSpace = openSpace;
+                    maxOpenSpaceNeighbor = neighbor;
+                    break;
                 }
-            }
-            if (leftPoint.X >= 0 && !occupied.Contains(leftPoint))
-            {
-                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, leftPoint);
-                if(openNeighbors.Count() > maxOpenNeighbors)
+
+                if(openSpace > maxOpenSpace)
                 {
-                    direction = "left";
-                    maxOpenNeighbors = openNeighbors.Count();
+                    maxOpenSpace = openSpace;
+                    maxOpenSpaceNeighbor = neighbor;
                 }
+
+
+                //var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
+
+
+                //var count = openNeighbors.Count();
+                //if (count > 1 && gameStatusRequest.Board.Food.Any(f => f.X == neighbor.X && f.Y == neighbor.Y))
+                //    count++;
+                //if (count > maxOpenNeighbors)
+                //{
+                //    best = neighbor;
+                //    maxOpenNeighbors = count;
+                //}
             }
-            if (rightPoint.X < gameStatusRequest.Board.Width && !occupied.Contains(rightPoint))
-            {
-                var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, rightPoint);
-                if(openNeighbors.Count() > maxOpenNeighbors)
-                {
-                    direction = "right";
-                    maxOpenNeighbors = openNeighbors.Count();
-                }
-            }*/
-            if (best.X > curCoords.X)
+            if (maxOpenSpaceNeighbor.X > curCoords.X)
                 direction = "right";
-            else if (best.X < curCoords.X)
+            else if (maxOpenSpaceNeighbor.X < curCoords.X)
                 direction = "left";
-            else if (best.Y > curCoords.Y)
+            else if (maxOpenSpaceNeighbor.Y > curCoords.Y)
                 direction = "up";
             else
                 direction = "down";
