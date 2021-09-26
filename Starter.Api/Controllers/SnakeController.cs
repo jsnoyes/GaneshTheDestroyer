@@ -86,6 +86,12 @@ namespace Starter.Api.Controllers
             return totalSpace;
         }
 
+        private List<Snake> GetPossibleHeadCollision(GameStatusRequest gameStatusRequest, Point point)
+        {
+            var neighbors = GetOpenNeighbors(gameStatusRequest, new HashSet<Point>(), point);
+            return gameStatusRequest.Board.Snakes.Where(s => s.Id != gameStatusRequest.You.Id && neighbors.Contains(s.Head)).ToList();
+        }
+
         /// <summary>
         /// This request will be sent for every turn of the game.
         /// Use the information provided to determine how your
@@ -103,6 +109,18 @@ namespace Starter.Api.Controllers
             var best = openNeighs.FirstOrDefault();
             foreach(var neighbor in openNeighs)
             {
+                var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
+                if (possibleCollisions.Any())
+                {
+                    if(possibleCollisions.Any(s => s.Length >= gameStatusRequest.You.Length))
+                        continue;
+
+                    if(possibleCollisions.All(s => s.Length < gameStatusRequest.You.Length))
+                    {
+                        best = neighbor;
+                        break;
+                    }
+                }
                 var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor);
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
 
