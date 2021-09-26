@@ -63,12 +63,11 @@ namespace Starter.Api.Controllers
 
         private int GetOpenSpace(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, Point pointToTest)
         {
-            var minSpaceNeeded = gameStatusRequest.You.Body.Count();
             var totalSpace = 0;
             var tempOccupied = occupied.ToHashSet();
             var toCheck = new Queue<Point>();
             toCheck.Enqueue(pointToTest);
-            while (toCheck.Any() && totalSpace < minSpaceNeeded)
+            while (toCheck.Any())
             {
                 var point = toCheck.Dequeue();
                 if (tempOccupied.Contains(point))
