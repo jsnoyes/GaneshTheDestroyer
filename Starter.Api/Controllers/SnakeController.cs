@@ -83,10 +83,13 @@ namespace Starter.Api.Controllers
             foreach(var neighbor in openNeighs)
             {
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
-                if (openNeighbors.Count() > maxOpenNeighbors)
+                var count = openNeighbors.Count();
+                if (count > 1 && gameStatusRequest.Board.Food.Any(f => f.X == neighbor.X && f.Y == neighbor.Y))
+                    count++;
+                if (count > maxOpenNeighbors)
                 {
                     best = neighbor;
-                    maxOpenNeighbors = openNeighbors.Count();
+                    maxOpenNeighbors = count;
                 }
             }
 
