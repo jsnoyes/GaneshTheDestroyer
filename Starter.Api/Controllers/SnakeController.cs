@@ -110,18 +110,20 @@ namespace Starter.Api.Controllers
             foreach(var neighbor in openNeighs)
             {
                 var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
+                var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor);
                 if (possibleCollisions.Any())
                 {
                     if(possibleCollisions.Any(s => s.Length >= gameStatusRequest.You.Length))
                         continue;
 
-                    if(possibleCollisions.All(s => s.Length < gameStatusRequest.You.Length))
+                    if(possibleCollisions.All(s => s.Length < gameStatusRequest.You.Length)
+                       && openSpace > gameStatusRequest.You.Length)
                     {
                         best = neighbor;
                         break;
                     }
                 }
-                var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor);
+               
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
 
                 if (openSpace > maxOpenSpace)
