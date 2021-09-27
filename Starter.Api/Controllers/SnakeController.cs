@@ -100,7 +100,7 @@ namespace Starter.Api.Controllers
         [HttpPost("move")]
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
-            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body).ToHashSet();
+            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body.Take(s.Body.Count() - 1)).ToHashSet();
             Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList()));
             var curCoords = gameStatusRequest.You.Head;
             var openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
