@@ -180,4 +180,12 @@ namespace Starter.Api.Controllers
             return Ok();
         }
     }
+
+    public class MoveCandidate
+    {
+        public string Direction { get; set; }
+        public List<Snake> PossibleCollisions { get; set; } = new List<Snake>();
+        public int OpenSpaces { get; set; }
+        public List<Point> OpenNeighbors { get; set; } = new List<Point>();
+    }
 }
