@@ -109,14 +109,7 @@ namespace Starter.Api.Controllers
             var best = openNeighs.FirstOrDefault();
             var otherSnakes = gameStatusRequest.Board.Snakes
                 .Where(s => s.Id != gameStatusRequest.You.Id).ToList();
-            var openSpaces = otherSnakes                
-                .ToDictionary(s => s.Id, s =>
-                    {
-                        var tempOpenSpaces = GetOpenNeighbors(gameStatusRequest, occupied, s.Head);
-                        var max = tempOpenSpaces.Any() ? tempOpenSpaces.Max(z => GetOpenSpace(gameStatusRequest, occupied, z)) : 0;
-                        var lookup = new { Snake = s, OpenSpace = max };
-                        return lookup;
-                    });
+            var openSpaces = GetOpenSpacesDict(gameStatusRequest, occupied, otherSnakes);
             foreach(var neighbor in openNeighs)
             {
                 var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
@@ -137,16 +130,14 @@ namespace Starter.Api.Controllers
                 // Test to see if snake can trap other snakes in a small space.
                 var testOccupied = occupied.ToHashSet();
                 testOccupied.Add(neighbor);
-                var openSpacesWithTest = otherSnakes
-                    .ToDictionary(s => s.Id, s => new { Snake = s, OpenSpace = GetOpenSpace(gameStatusRequest, testOccupied, s.Head) });
-                if (openSpacesWithTest.Any(s => openSpaces[s.Key].OpenSpace > s.Value.OpenSpace && s.Value.OpenSpace < s.Value.Snake.Length))
+                var openSpacesWithTest = GetOpenSpacesDict(gameStatusRequest, testOccupied, otherSnakes);
+                    
+                if (openSpacesWithTest.Any(s => s.Value.OpenSpace < openSpaces[s.Key].OpenSpace && s.Value.OpenSpace < s.Value.Snake.Length))
                 {
                     maxOpenSpace = openSpace;
                     best = neighbor;
                     break;
                 }
-
-                var othersOpenSpace = gameStatusRequest.Board.Snakes.Select(s => new { Snake = s, OpenSpace = GetOpenSpace(gameStatusRequest, occupied, s.Head) }).ToList();
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
 
@@ -190,6 +181,24 @@ namespace Starter.Api.Controllers
                 Shout = "I am moving!"
             };
             return Ok(response);
+        }
+
+        private Dictionary<string, OpenSpaceLookup> GetOpenSpacesDict(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, List<Snake> snakes)
+        { 
+            return snakes
+                .ToDictionary(s => s.Id, s =>
+                 {
+                     var tempOpenSpaces = GetOpenNeighbors(gameStatusRequest, occupied, s.Head);
+                     var max = tempOpenSpaces.Any() ? tempOpenSpaces.Max(z => GetOpenSpace(gameStatusRequest, occupied, z)) : 0;
+                     var lookup = new OpenSpaceLookup { Snake = s, OpenSpace = max };
+                     return lookup;
+                 });
+        }
+
+        private class OpenSpaceLookup
+        {
+            public Snake Snake { get; set; }
+            public int OpenSpace { get; set; }
         }
 
 
