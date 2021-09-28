@@ -213,6 +213,8 @@ namespace Starter.Api.Controllers
                 if (foodHS.Contains(pt.Item1))
                     return pt.Item2;
 
+                tempOccupied.Add(pt.Item1);
+
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, tempOccupied, pt.Item1);
                 foreach(var neighbor in openNeighbors)
                 {
