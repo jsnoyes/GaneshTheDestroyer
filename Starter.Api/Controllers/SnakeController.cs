@@ -131,8 +131,11 @@ namespace Starter.Api.Controllers
                 var testOccupied = occupied.ToHashSet();
                 testOccupied.Add(neighbor);
                 var openSpacesWithTest = GetOpenSpacesDict(gameStatusRequest, testOccupied, otherSnakes);
+                var neighborsNeighbors = GetOpenNeighbors(gameStatusRequest, testOccupied, neighbor);
+                var myOpenSpaceWithTest = neighborsNeighbors.Any() ? neighborsNeighbors.Max(n => GetOpenSpace(gameStatusRequest, testOccupied, n)) : 0;
                     
-                if (openSpacesWithTest.Any(s => s.Value.OpenSpace < openSpaces[s.Key].OpenSpace && s.Value.OpenSpace < s.Value.Snake.Length))
+                // If going into this cell closes off a section for another snake, but doesn't close off 
+                if (openSpacesWithTest.Any(s => s.Value.OpenSpace < openSpaces[s.Key].OpenSpace && s.Value.OpenSpace < s.Value.Snake.Length) && myOpenSpaceWithTest > gameStatusRequest.You.Length)
                 {
                     maxOpenSpace = openSpace;
                     best = neighbor;
