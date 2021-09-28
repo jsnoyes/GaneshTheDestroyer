@@ -110,7 +110,9 @@ namespace Starter.Api.Controllers
             var otherSnakes = gameStatusRequest.Board.Snakes
                 .Where(s => s.Id != gameStatusRequest.You.Id).ToList();
             var openSpaces = GetOpenSpacesDict(gameStatusRequest, occupied, otherSnakes);
-            foreach(var neighbor in openNeighs)
+            var foodHS = gameStatusRequest.Board.Food.ToHashSet();
+            var shortestDistToFood = int.MaxValue;
+            foreach (var neighbor in openNeighs)
             {
                 var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
                 var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor);
@@ -143,28 +145,39 @@ namespace Starter.Api.Controllers
                 }
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
+                var distanceToClosestFood = GetDistanceToClosestFood(gameStatusRequest, foodHS, occupied, neighbor);
 
                 if (openSpace > maxOpenSpace)
                 {
                     maxOpenSpace = openSpace;
                     maxOpenNeighbors = openNeighbors.Count();
                     best = neighbor;
+                    shortestDistToFood = distanceToClosestFood;
                 }
                 else if(openSpace == maxOpenSpace)
                 {
                     // If there is enough room and there is food.
-                    if (openSpace > gameStatusRequest.You.Body.Count() + 1 && gameStatusRequest.Board.Food.Any(f => f.X == neighbor.X && f.Y == neighbor.Y))
+                    if (openSpace > gameStatusRequest.You.Body.Count() + 1 && distanceToClosestFood == 1)
                     {
                         maxOpenSpace = openSpace;
                         best = neighbor;
                         break;
                     }
 
-                    if (openNeighbors.Count() > maxOpenNeighbors)
+                    //if (openNeighbors.Count() > maxOpenNeighbors)
+                    if(distanceToClosestFood < shortestDistToFood)
                     {
                         best = neighbor;
                         maxOpenNeighbors = openNeighbors.Count();
-                        maxOpenSpace = openSpace;
+                        shortestDistToFood = distanceToClosestFood;
+                    } else if(distanceToClosestFood == shortestDistToFood)
+                    {
+                        if(openNeighbors.Count() > maxOpenNeighbors)
+                        {
+                            best = neighbor;
+                            maxOpenNeighbors = openNeighbors.Count();
+                            shortestDistToFood = distanceToClosestFood;
+                        }
                     }
                 }
             }
@@ -184,6 +197,29 @@ namespace Starter.Api.Controllers
                 Shout = "I am moving!"
             };
             return Ok(response);
+        }
+
+        private int GetDistanceToClosestFood(GameStatusRequest gameStatusRequest, HashSet<Point> foodHS, HashSet<Point> occupied, Point point)
+        {
+            var tempOccupied = occupied.ToHashSet();
+            var q = new Queue<Tuple<Point, int>>();
+            q.Enqueue(new Tuple<Point, int>(point, 1));
+            while (q.Any())
+            {
+                var pt = q.Dequeue();
+                if (tempOccupied.Contains(pt.Item1))
+                    continue;
+
+                if (foodHS.Contains(pt.Item1))
+                    return pt.Item2;
+
+                var openNeighbors = GetOpenNeighbors(gameStatusRequest, tempOccupied, pt.Item1);
+                foreach(var neighbor in openNeighbors)
+                {
+                    q.Enqueue(new Tuple<Point, int>(neighbor, pt.Item2 + 1));
+                }
+            }
+            return int.MaxValue;
         }
 
         private Dictionary<string, OpenSpaceLookup> GetOpenSpacesDict(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, List<Snake> snakes)
