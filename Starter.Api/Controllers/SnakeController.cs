@@ -145,7 +145,7 @@ namespace Starter.Api.Controllers
                 }
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
-                var distanceToClosestFood = GetDistanceToClosestFood(gameStatusRequest, foodHS, occupied, neighbor);
+                var distanceToClosestFood = GetDistanceToClosestFood(gameStatusRequest, foodHS, occupied, neighbor, 3);
 
                 if (openSpace > maxOpenSpace)
                 {
@@ -199,7 +199,7 @@ namespace Starter.Api.Controllers
             return Ok(response);
         }
 
-        private int GetDistanceToClosestFood(GameStatusRequest gameStatusRequest, HashSet<Point> foodHS, HashSet<Point> occupied, Point point)
+        private int GetDistanceToClosestFood(GameStatusRequest gameStatusRequest, HashSet<Point> foodHS, HashSet<Point> occupied, Point point, int maxDistanceToLook)
         {
             var tempOccupied = occupied.ToHashSet();
             var q = new Queue<Tuple<Point, int>>();
@@ -214,6 +214,9 @@ namespace Starter.Api.Controllers
                     return pt.Item2;
 
                 tempOccupied.Add(pt.Item1);
+
+                if (pt.Item2 > maxDistanceToLook)
+                    continue;
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, tempOccupied, pt.Item1);
                 foreach(var neighbor in openNeighbors)
