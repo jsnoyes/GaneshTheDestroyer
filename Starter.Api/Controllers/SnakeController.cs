@@ -112,6 +112,7 @@ namespace Starter.Api.Controllers
             var openSpaces = GetOpenSpacesDict(gameStatusRequest, occupied, otherSnakes);
             var foodHS = gameStatusRequest.Board.Food.ToHashSet();
             var shortestDistToFood = int.MaxValue;
+
             foreach (var neighbor in openNeighs)
             {
                 var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
@@ -125,6 +126,7 @@ namespace Starter.Api.Controllers
                        && openSpace > gameStatusRequest.You.Length)
                     {
                         best = neighbor;
+                        maxOpenSpace = openSpace;
                         break;
                     }
                 }
@@ -145,7 +147,7 @@ namespace Starter.Api.Controllers
                 }
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
-                var distanceToClosestFood = GetDistanceToClosestFood(gameStatusRequest, foodHS, occupied, neighbor, 3);
+                var distanceToClosestFood = GetDistanceToClosestRequestedPoints(gameStatusRequest, foodHS, occupied, neighbor, 3);
 
                 if (openSpace > maxOpenSpace)
                 {
@@ -170,6 +172,7 @@ namespace Starter.Api.Controllers
                         best = neighbor;
                         maxOpenNeighbors = openNeighbors.Count();
                         shortestDistToFood = distanceToClosestFood;
+                        maxOpenSpace = openSpace;
                     } else if(distanceToClosestFood == shortestDistToFood)
                     {
                         if(openNeighbors.Count() > maxOpenNeighbors)
@@ -177,10 +180,52 @@ namespace Starter.Api.Controllers
                             best = neighbor;
                             maxOpenNeighbors = openNeighbors.Count();
                             shortestDistToFood = distanceToClosestFood;
+                            maxOpenSpace = openSpace;
                         }
                     }
                 }
             }
+
+            if(maxOpenSpace < 2 * gameStatusRequest.You.Length)
+            {
+                Point firstOpening = null;
+                var ind = 0;
+                var tempOcc = occupied.ToHashSet();
+                var maxSnakeLength = gameStatusRequest.Board.Snakes.Max(s => s.Length);
+                while (firstOpening == null && ind < maxSnakeLength)
+                {
+                    firstOpening = gameStatusRequest.Board.Snakes.Select(s => s.Body.Skip(s.Body.Count() - ind).FirstOrDefault()).Where(s => s != null)
+                        .FirstOrDefault(p =>
+                        {
+                            tempOcc.Remove(p);
+                            var openSp = GetOpenSpace(gameStatusRequest, tempOcc, gameStatusRequest.You.Head);
+                            return openSp > maxOpenSpace;
+                        });
+                    ind++;
+                }
+
+                if (firstOpening != null)
+                {
+                    Point farthestNeighborFromSoonestOpenPoint = null;
+                    var farthestNeightborsDistanceFromOpenPoint = 0;
+                    var pointHS = new HashSet<Point>();
+                    pointHS.Add(firstOpening);
+                    foreach (var neigh in openNeighs)
+                    {
+                        var distanceFromOpenPoint = GetDistanceToClosestRequestedPoints(gameStatusRequest, pointHS, tempOcc, neigh, 99);
+                        if (distanceFromOpenPoint == int.MaxValue)
+                            continue;
+                        if (distanceFromOpenPoint > farthestNeightborsDistanceFromOpenPoint)
+                        {
+                            farthestNeightborsDistanceFromOpenPoint = distanceFromOpenPoint;
+                            farthestNeighborFromSoonestOpenPoint = neigh;
+                        }
+                    }
+                    if (farthestNeighborFromSoonestOpenPoint != null)
+                        best = farthestNeighborFromSoonestOpenPoint;
+                }
+            }
+
             var direction = "up"; // {"down", "left", "right", "up"};
             if (best.X > curCoords.X)
                 direction = "right";
@@ -199,7 +244,7 @@ namespace Starter.Api.Controllers
             return Ok(response);
         }
 
-        private int GetDistanceToClosestFood(GameStatusRequest gameStatusRequest, HashSet<Point> foodHS, HashSet<Point> occupied, Point point, int maxDistanceToLook)
+        private int GetDistanceToClosestRequestedPoints(GameStatusRequest gameStatusRequest, HashSet<Point> requestedPoints, HashSet<Point> occupied, Point point, int maxDistanceToLook)
         {
             var tempOccupied = occupied.ToHashSet();
             var q = new Queue<Tuple<Point, int>>();
@@ -210,7 +255,7 @@ namespace Starter.Api.Controllers
                 if (tempOccupied.Contains(pt.Item1))
                     continue;
 
-                if (foodHS.Contains(pt.Item1))
+                if (requestedPoints.Contains(pt.Item1))
                     return pt.Item2;
 
                 tempOccupied.Add(pt.Item1);
