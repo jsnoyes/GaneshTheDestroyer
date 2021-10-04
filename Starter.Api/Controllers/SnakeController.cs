@@ -147,7 +147,7 @@ namespace Starter.Api.Controllers
                 }
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
-                var distanceToClosestFood = GetDistanceToClosestRequestedPoints(gameStatusRequest, foodHS, occupied, neighbor, 3);
+                var distanceToClosestFood = GetDistanceToClosestRequestedPoints(gameStatusRequest, foodHS, occupied, neighbor, 6);
 
                 if (openSpace > maxOpenSpace)
                 {
