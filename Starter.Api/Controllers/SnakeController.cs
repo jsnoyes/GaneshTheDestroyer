@@ -146,7 +146,7 @@ namespace Starter.Api.Controllers
             var response1 = new MoveResponse
             {
                 Move = direction1,
-                Shout = "I am moving!"
+                Shout = "I'm coming for ya!"
             };
             return Ok(response1);
                 }
