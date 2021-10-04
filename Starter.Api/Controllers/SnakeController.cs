@@ -133,19 +133,19 @@ namespace Starter.Api.Controllers
                 if(closestNeighborToHeadDistance < int.MaxValue)
                 {
                     best = closestNeighborToHead;
-                    var direction = "up"; // {"down", "left", "right", "up"};
+                    var direction1 = "up"; // {"down", "left", "right", "up"};
             if (best.X > curCoords.X)
-                direction = "right";
+                direction1 = "right";
             else if (best.X < curCoords.X)
-                direction = "left";
+                direction1 = "left";
             else if (best.Y > curCoords.Y)
-                direction = "up";
+                direction1 = "up";
             else
-                direction = "down";
+                direction1 = "down";
 
             var response = new MoveResponse
             {
-                Move = direction,
+                Move = direction1,
                 Shout = "I am moving!"
             };
             return Ok(response);
