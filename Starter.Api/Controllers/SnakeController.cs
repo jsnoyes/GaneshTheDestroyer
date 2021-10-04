@@ -294,6 +294,10 @@ Console.WriteLine(response.Shout);
         private int GetDistanceToClosestRequestedPoints(GameStatusRequest gameStatusRequest, HashSet<Point> requestedPoints, HashSet<Point> occupied, Point point, int maxDistanceToLook)
         {
             var tempOccupied = occupied.ToHashSet();
+
+            foreach(var rp in requestedPoints)
+                tempOccupied.Remove(rp);
+
             var q = new Queue<Tuple<Point, int>>();
             q.Enqueue(new Tuple<Point, int>(point, 1));
             while (q.Any())
