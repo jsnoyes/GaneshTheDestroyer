@@ -26,7 +26,7 @@ namespace Starter.Api.Controllers
                 Head = "shades",
                 Tail = "bolt"
             };
-
+            Console.WriteLine(response.Head + " " + response.Tail);
             return Ok(response);
         }
 
@@ -148,6 +148,9 @@ namespace Starter.Api.Controllers
                 Move = direction1,
                 Shout = "I'm coming for ya!"
             };
+
+Console.WriteLine(response1.Shout);
+
             return Ok(response1);
                 }
             }
@@ -281,6 +284,9 @@ namespace Starter.Api.Controllers
                 Move = direction,
                 Shout = "I am moving!"
             };
+
+Console.WriteLine(response.Shout);
+
             return Ok(response);
         }
 
