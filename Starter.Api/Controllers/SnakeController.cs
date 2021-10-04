@@ -24,7 +24,7 @@ namespace Starter.Api.Controllers
                 Author = "Jake",
                 Color = "#f7c244",
                 Head = "shades",
-                Tail = "default"
+                Tail = "bolt"
             };
 
             return Ok(response);
