@@ -113,6 +113,46 @@ namespace Starter.Api.Controllers
             var foodHS = gameStatusRequest.Board.Food.ToHashSet();
             var shortestDistToFood = int.MaxValue;
 
+            if(gameStatusRequest.Board.Snakes.Count() == 2
+                && gameStatusRequest.You.Length > otherSnakes.First().Length + 1
+                && gameStatusRequest.You.Health > 30)
+            {
+                var snakeHS = new HashSet<Point>();
+                snakeHS.Add(otherSnakes.First().Head);
+                Point closestNeighborToHead = null;
+                var closestNeighborToHeadDistance = int.MaxValue;
+                foreach(var neighbor in openNeighs)
+                {
+                    var dst = GetDistanceToClosestRequestedPoints(gameStatusRequest, snakeHS, occupied, neighbor, closestNeighborToHeadDistance);
+                    if(dst < closestNeighborToHeadDistance)
+                    {
+                        closestNeighborToHeadDistance = dst;
+                        closestNeighborToHead = neighbor;
+                    }
+                }
+                if(closestNeighborToHeadDistance < int.MaxValue)
+                {
+                    best = closestNeighborToHead;
+                    var direction = "up"; // {"down", "left", "right", "up"};
+            if (best.X > curCoords.X)
+                direction = "right";
+            else if (best.X < curCoords.X)
+                direction = "left";
+            else if (best.Y > curCoords.Y)
+                direction = "up";
+            else
+                direction = "down";
+
+            var response = new MoveResponse
+            {
+                Move = direction,
+                Shout = "I am moving!"
+            };
+            return Ok(response);
+                }
+            }
+            
+
             foreach (var neighbor in openNeighs)
             {
                 var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
