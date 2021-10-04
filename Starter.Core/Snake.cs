@@ -25,7 +25,7 @@ namespace Starter.Core
         /// Health value of this Battlesnake, between 0 and 100 inclusively.
         /// Example: 54
         /// </summary>
-        public string Health { get; set; }
+        public int Health { get; set; }
 
 
         /// <summary>
