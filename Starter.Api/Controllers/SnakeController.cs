@@ -124,6 +124,7 @@ namespace Starter.Api.Controllers
                 foreach(var neighbor in openNeighs)
                 {
                     var dst = GetDistanceToClosestRequestedPoints(gameStatusRequest, snakeHS, occupied, neighbor, closestNeighborToHeadDistance);
+ Console.WriteLine(dst.ToString() + " " + closestNeighborToHeadDistance);
                     if(dst < closestNeighborToHeadDistance)
                     {
                         closestNeighborToHeadDistance = dst;
