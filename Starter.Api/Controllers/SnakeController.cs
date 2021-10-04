@@ -137,7 +137,7 @@ namespace Starter.Api.Controllers
             if (best.X > curCoords.X)
                 direction1 = "right";
             else if (best.X < curCoords.X)
-                Uh direction1 = "left";
+                direction1 = "left";
             else if (best.Y > curCoords.Y)
                 direction1 = "up";
             else
