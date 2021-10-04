@@ -137,18 +137,18 @@ namespace Starter.Api.Controllers
             if (best.X > curCoords.X)
                 direction1 = "right";
             else if (best.X < curCoords.X)
-                direction1 = "left";
+                Uh direction1 = "left";
             else if (best.Y > curCoords.Y)
                 direction1 = "up";
             else
                 direction1 = "down";
 
-            var response = new MoveResponse
+            var response1 = new MoveResponse
             {
                 Move = direction1,
                 Shout = "I am moving!"
             };
-            return Ok(response);
+            return Ok(response1);
                 }
             }
             
