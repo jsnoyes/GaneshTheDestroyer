@@ -112,7 +112,7 @@ namespace Starter.Api.Controllers
             var openSpaces = GetOpenSpacesDict(gameStatusRequest, occupied, otherSnakes);
             var foodHS = gameStatusRequest.Board.Food.ToHashSet();
             var shortestDistToFood = int.MaxValue;
-
+ Console.WriteLine(gameStatusRequest.Board.Snakes.Count().ToString() + " " + gameStatusRequest.You.Length + " " + (otherSnakes.First().Length + 1) + " " + gameStatusRequest.You.Health);
             if(gameStatusRequest.Board.Snakes.Count() == 2
                 && gameStatusRequest.You.Length > otherSnakes.First().Length + 1
                 && gameStatusRequest.You.Health > 30)
