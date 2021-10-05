@@ -114,7 +114,7 @@ namespace Starter.Api.Controllers
             var shortestDistToFood = int.MaxValue;
  Console.WriteLine(gameStatusRequest.Board.Snakes.Count().ToString() + " " + gameStatusRequest.You.Length + " " + (otherSnakes.First().Length + 1) + " " + gameStatusRequest.You.Health);
             if(gameStatusRequest.Board.Snakes.Count() == 2
-                && gameStatusRequest.You.Length > otherSnakes.First().Length + 1
+                && gameStatusRequest.You.Length > otherSnakes.First().Length
                 && gameStatusRequest.You.Health > 30)
             {
                 var snakeHS = new HashSet<Point>();
