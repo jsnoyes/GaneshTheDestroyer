@@ -23,7 +23,7 @@ namespace Starter.Api.Controllers
                 ApiVersion = "1",
                 Author = "Jake",
                 Color = "#f7c244",
-                Head = "shades",
+                Head = "beluga",
                 Tail = "bolt"
             };
             Console.WriteLine(response.Head + " " + response.Tail);
