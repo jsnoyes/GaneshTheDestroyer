@@ -178,7 +178,7 @@ Console.WriteLine(response1.Shout);
 
                     if(possibleCollisions.All(s => s.Length < gameStatusRequest.You.Length)
                        && openSpace > gameStatusRequest.You.Length
-                       && (!possibleHeadCollision || openSpace > maxOpenSpace)
+                       && (!possibleHeadCollision || openSpace > maxOpenSpace))
                     {
                         best = neighbor;
                         maxOpenSpace = openSpace;
