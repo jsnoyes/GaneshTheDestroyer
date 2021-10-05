@@ -108,6 +108,11 @@ namespace Starter.Api.Controllers
             Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList()));
             var curCoords = gameStatusRequest.You.Head;
             var openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
+            if(!openNeighs.Any())
+            {
+                gameStatusRequest.Board.Hazards.ToList().ForEach(h => occupied.Remove(h));
+                openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
+            }
             var maxOpenSpace = 0;
             var maxOpenNeighbors = 0;
             var best = openNeighs.FirstOrDefault();
@@ -116,6 +121,7 @@ namespace Starter.Api.Controllers
             var openSpaces = GetOpenSpacesDict(gameStatusRequest, occupied, otherSnakes);
             var foodHS = gameStatusRequest.Board.Food.ToHashSet();
             var shortestDistToFood = int.MaxValue;
+            var possibleHeadCollision = false;
  Console.WriteLine(gameStatusRequest.Board.Snakes.Count().ToString() + " " + gameStatusRequest.You.Length + " " + (otherSnakes.First().Length + 1) + " " + gameStatusRequest.You.Health);
             if(gameStatusRequest.Board.Snakes.Count() == 2
                 && gameStatusRequest.You.Length > otherSnakes.First().Length
@@ -171,13 +177,16 @@ Console.WriteLine(response1.Shout);
                         continue;
 
                     if(possibleCollisions.All(s => s.Length < gameStatusRequest.You.Length)
-                       && openSpace > gameStatusRequest.You.Length)
+                       && openSpace > gameStatusRequest.You.Length
+                       && (!possibleHeadCollision || openSpace > maxOpenSpace)
                     {
                         best = neighbor;
                         maxOpenSpace = openSpace;
-                        break;
+                        possibleHeadCollision = true;
                     }
                 }
+                if(possibleHeadCollision)
+                    continue;
 
                 // Test to see if snake can trap other snakes in a small space.
                 var testOccupied = occupied.ToHashSet();
