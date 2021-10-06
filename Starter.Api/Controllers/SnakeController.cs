@@ -100,7 +100,7 @@ namespace Starter.Api.Controllers
         [HttpPost("move")]
         public IActionResult Move(GameStatusRequest gameStatusRequest)
         {
-            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body.Take(s.Body.Count() - 1)).ToHashSet();
+            var occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body.Take(s.Body.Count() - (s.Length == s.Body.Count() ? 1 : 0))).ToHashSet();
             if(gameStatusRequest.Board.Hazards?.Any() == true)
             {
                 gameStatusRequest.Board.Hazards.ToList().ForEach(h => occupied.Add(h));
