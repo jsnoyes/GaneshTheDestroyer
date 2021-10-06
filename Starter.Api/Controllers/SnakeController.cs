@@ -110,7 +110,7 @@ namespace Starter.Api.Controllers
             var openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
             if(!openNeighs.Any())
             {
-                gameStatusRequest.Board.Hazards.ToList().ForEach(h => occupied.Remove(h));
+                occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body.Take(s.Body.Count() - (s.Length == s.Body.Count() ? 1 : 0))).ToHashSet();
                 openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
             }
             var maxOpenSpace = 0;
