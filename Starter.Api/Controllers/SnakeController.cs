@@ -243,6 +243,35 @@ Console.WriteLine(response1.Shout);
                 }
             }
 
+            if(maxOpenSpace == 0) // Proxy to determine if best has been set. 
+            {
+                foreach(var neigh in openNeighs)
+                {
+                    var curOpenSpace = GetOpenSpace(gameStatusRequest, occupied, neigh);
+                    if(curOpenSpace > maxOpenSpace)
+                    {
+                        best = neigh;
+                        maxOpenSpace = curOpenSpace;
+                    }
+                }
+            }
+
+            if(maxOpenSpace == 0) // Proxy to determine if best has been set. 
+            {
+                occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body.Take(s.Body.Count() - (s.Length == s.Body.Count() ? 1 : 0))).ToHashSet();
+                openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
+
+                foreach(var neigh in openNeighs)
+                {
+                    var curOpenSpace = GetOpenSpace(gameStatusRequest, occupied, neigh);
+                    if(curOpenSpace > maxOpenSpace)
+                    {
+                        best = neigh;
+                        maxOpenSpace = curOpenSpace;
+                    }
+                }
+            }
+
             if(maxOpenSpace < 2 * gameStatusRequest.You.Length)
             {
                 Point firstOpening = null;
