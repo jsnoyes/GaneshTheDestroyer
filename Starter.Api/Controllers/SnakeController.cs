@@ -352,6 +352,8 @@ Console.WriteLine(response.Shout);
                 {
                     if(isMySnakeClosest)
                     {
+                        var otherSnakes = gameStatusRequest.Board.Snakes
+                           .Where(s => s.Id != gameStatusRequest.You.Id).ToList();
                         var testRequestedPoints = new HashSet<Point>();
                         testRequestedPoints.Add(pt.Item1);
                         if(!otherSnakes.Any(s => GetDistanceToClosestRequestedPoints(gameStatusRequest, testRequestedPoints, occupied, s.Head, pt.Item2, false) <= pt.Item2 + (s.Length >= gameStatusRequest.You.Length ? -1 : 0)))
