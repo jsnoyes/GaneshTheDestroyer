@@ -204,7 +204,7 @@ Console.WriteLine(response1.Shout);
                 }
 
                 var openNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
-                var distanceToClosestFood = GetDistanceToClosestRequestedPoints(gameStatusRequest, foodHS, occupied, neighbor, 6);
+                var distanceToClosestFood = GetDistanceToClosestRequestedPoints(gameStatusRequest, foodHS, occupied, neighbor, 7, true);
 
                 if (openSpace > maxOpenSpace)
                 {
@@ -333,7 +333,7 @@ Console.WriteLine(response.Shout);
             return Ok(response);
         }
 
-        private int GetDistanceToClosestRequestedPoints(GameStatusRequest gameStatusRequest, HashSet<Point> requestedPoints, HashSet<Point> occupied, Point point, int maxDistanceToLook)
+        private int GetDistanceToClosestRequestedPoints(GameStatusRequest gameStatusRequest, HashSet<Point> requestedPoints, HashSet<Point> occupied, Point point, int maxDistanceToLook, bool isMySnakeClosest = false)
         {
             var tempOccupied = occupied.ToHashSet();
 
@@ -349,7 +349,19 @@ Console.WriteLine(response.Shout);
                     continue;
 
                 if (requestedPoints.Contains(pt.Item1))
-                    return pt.Item2;
+                {
+                    if(isMySnakeClosest)
+                    {
+                        var testRequestedPoints = new HashSet<Point>();
+                        testRequestedPoints.Add(pt.Item2);
+                        if(!otherSnakes.Any(s => GetDistanceToClosestRequestedPoints(gameStatusRequest, testRequestedPoints, occupied, s.Head, pt.Item1, false) <= pt.Item1 + (s.Length >= gameStatusRequest.You.Length ? -1 : 0)))
+                        {
+                            return pt.Item2;
+                        }
+                    } else {
+                        return pt.Item2;
+                    }
+                }
 
                 tempOccupied.Add(pt.Item1);
 
