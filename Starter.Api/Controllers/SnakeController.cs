@@ -125,7 +125,8 @@ namespace Starter.Api.Controllers
  Console.WriteLine(gameStatusRequest.Board.Snakes.Count().ToString() + " " + gameStatusRequest.You.Length + " " + (otherSnakes.First().Length + 1) + " " + gameStatusRequest.You.Health);
             if(gameStatusRequest.Board.Snakes.Count() == 2
                 && gameStatusRequest.You.Length > otherSnakes.First().Length
-                && gameStatusRequest.You.Health > 30)
+                && gameStatusRequest.You.Health > 30
+                && openNeighs.All(n => !gameStatusRequest.Board.Hazards.Contains(n)))
             {
                 var snakeHS = new HashSet<Point>();
                 snakeHS.Add(otherSnakes.First().Head);
