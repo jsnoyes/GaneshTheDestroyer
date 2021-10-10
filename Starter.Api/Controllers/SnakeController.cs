@@ -139,7 +139,7 @@ namespace Starter.Api.Controllers
  Console.WriteLine(dst.ToString() + " " + closestNeighborToHeadDistance);
                     var neighborsNeighbors = GetOpenNeighbors(gameStatusRequest, occupied, neighbor);
                     var otherSnakeHead = otherSnakes.First().Head;
-                    var otherSnakeHeadIsNeigbor = (Math.Abs(Math.Abs(otherSnakeHead.X) - Math.Abs(you.Head.X)) +  Math.Abs(Math.Abs(otherSnakeHead.X) - Math.Abs(you.Head.X))) == 1;
+                    var otherSnakeHeadIsNeigbor = (Math.Abs(otherSnakeHead.X - you.Head.X) +  Math.Abs(otherSnakeHead.Y - you.Head.Y)) == 1;
                     if(dst < closestNeighborToHeadDistance && neighborsNeighbors.Count() > (otherSnakeHeadIsNeigbor ? 0 : 1)) // don't go thru a 1 spot opening unless the other snakes head is next to it. 
                     {
                         closestNeighborToHeadDistance = dst;
