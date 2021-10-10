@@ -105,6 +105,7 @@ namespace Starter.Api.Controllers
             {
                 gameStatusRequest.Board.Hazards.ToList().ForEach(h => occupied.Add(h));
             }
+            var you = gameStatusRequest.You;
             Console.WriteLine("Occupied: " + string.Join(' ', occupied.Select(o => o.X.ToString() + "," + o.Y).ToList()));
             var curCoords = gameStatusRequest.You.Head;
             var openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
