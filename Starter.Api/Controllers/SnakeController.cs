@@ -194,7 +194,7 @@ Console.WriteLine(response1.Shout);
                     continue;
 
                 // Test for possible 50/50 diagonal by passing requested points of (-1,2), (-2,1), (-2,-1), (-1,-2), etc
-                var biggerOrEqualSnakes = otherSnakes.Where(s => s.Length >= you.Length).ToLost();
+                var biggerOrEqualSnakes = otherSnakes.Where(s => s.Length >= you.Length).ToList();
                 var potentiallyDiagonalPointsList = new List<Point>();
                 potentiallyDiagonalPointsList.Add(new Point(neighbor.X - 1, neighbor.Y + 2));
                 potentiallyDiagonalPointsList.Add(new Point(neighbor.X - 2, neighbor.Y + 1));
@@ -207,7 +207,7 @@ Console.WriteLine(response1.Shout);
    
                 potentiallyDiagonalPointsList.RemoveAll(p => p.X < 0 || p.X >= gameStatusRequest.Board.Width || p.Y < 0 || p.Y >= gameStatusRequest.Board.Height);
                 var potentiallyDiagonalPointsHS = potentiallyDiagonalPointsList.ToHashSet();
-                if(biggerOrEqualSnakes.Any(s => potentiallyDiagonalPointsHS.Contains(p) && GetDistanceToClosestRequestedPoints(gameStatusRequest, new List<Point>{p}.ToHashSet(), occupied, neighbor, 3, false) <= 3))
+                if(biggerOrEqualSnakes.Any(p => potentiallyDiagonalPointsHS.Contains(p) && GetDistanceToClosestRequestedPoints(gameStatusRequest, new List<Point>{p}.ToHashSet(), occupied, neighbor, 3, false) <= 3))
                    continue;
 
                 // Test to see if snake can trap other snakes in a small space.
