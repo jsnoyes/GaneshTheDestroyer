@@ -207,7 +207,7 @@ Console.WriteLine(response1.Shout);
    
                 potentiallyDiagonalPointsList.RemoveAll(p => p.X < 0 || p.X >= gameStatusRequest.Board.Width || p.Y < 0 || p.Y >= gameStatusRequest.Board.Height);
                 var potentiallyDiagonalPointsHS = potentiallyDiagonalPointsList.ToHashSet();
-                if(biggerOrEqualSnakes.Any(p => potentiallyDiagonalPointsHS.Contains(p) && GetDistanceToClosestRequestedPoints(gameStatusRequest, new List<Point>{p}.ToHashSet(), occupied, neighbor, 3, false) <= 3))
+                if(biggerOrEqualSnakes.Any(p => potentiallyDiagonalPointsHS.Contains(p.Head) && GetDistanceToClosestRequestedPoints(gameStatusRequest, new List<Point>{p.Head}.ToHashSet(), occupied, neighbor, 3, false) <= 3))
                    continue;
 
                 // Test to see if snake can trap other snakes in a small space.
