@@ -294,7 +294,17 @@ Console.WriteLine(response1.Shout);
                 }
             }
 
-            if(maxOpenSpace < 2 * gameStatusRequest.You.Length)
+            if(maxOpenSpace < gameStatusRequest.You.Length)
+            {
+                var tails = gameStatusRequest.Board.Snakes.Select(s => s.Body.Last()).ToHashSet();
+                var neighborWithSpacesWithTail = openNeighs.FirstOrDefault(n => GetDistanceToClosestRequestedPoints(gameStatusRequest, tails, occupied, n, 4, false) < 5);
+                if(neighborWithSpacesWithTail != null)
+                {
+                    best = neighborWithSpacesWithTail;
+                }
+            }
+
+            /*if(maxOpenSpace < 2 * gameStatusRequest.You.Length)
             {
                 Point firstOpening = null;
                 var ind = 0;
@@ -332,7 +342,7 @@ Console.WriteLine(response1.Shout);
                     if (farthestNeighborFromSoonestOpenPoint != null)
                         best = farthestNeighborFromSoonestOpenPoint;
                 }
-            }
+            }*/
 
             var direction = "up"; // {"down", "left", "right", "up"};
             if (best.X > curCoords.X)
