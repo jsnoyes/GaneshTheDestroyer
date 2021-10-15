@@ -265,7 +265,7 @@ Console.WriteLine(response1.Shout);
                 }
             }
 
-            if(maxOpenSpace == 0) // Proxy to determine if best has been set. 
+            /*if(maxOpenSpace <= gameStatusRequest.You.Length / 2) // Proxy to determine if best has been set. 
             {
                 foreach(var neigh in openNeighs)
                 {
@@ -276,9 +276,9 @@ Console.WriteLine(response1.Shout);
                         maxOpenSpace = curOpenSpace;
                     }
                 }
-            }
+            }*/
 
-            if(maxOpenSpace == 0) // Proxy to determine if best has been set. 
+            if(maxOpenSpace <= gameStatusRequest.You.Length / 2) // Proxy to determine if best has been set. 
             {
                 occupied = gameStatusRequest.Board.Snakes.SelectMany(s => s.Body.Take(s.Body.Count() - (s.Length == s.Body.Count() ? 1 : 0))).ToHashSet();
                 openNeighs = GetOpenNeighbors(gameStatusRequest, occupied, curCoords);
@@ -294,7 +294,7 @@ Console.WriteLine(response1.Shout);
                 }
             }
 
-            if(maxOpenSpace < gameStatusRequest.You.Length)
+            if(maxOpenSpace <= gameStatusRequest.You.Length)
             {
                 var tails = gameStatusRequest.Board.Snakes.Select(s => s.Body.Last()).ToHashSet();
                 var neighborWithSpacesWithTail = openNeighs.FirstOrDefault(n => GetDistanceToClosestRequestedPoints(gameStatusRequest, tails, occupied, n, 4, false) < 5);
