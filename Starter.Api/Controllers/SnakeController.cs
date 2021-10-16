@@ -61,17 +61,22 @@ namespace Starter.Api.Controllers
             return neighbors;
         }
 
-        private int GetOpenSpace(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, Point pointToTest)
+        private int GetOpenSpace(GameStatusRequest gameStatusRequest, HashSet<Point> occupied, Point pointToTest, Snake snake)
         {
             var totalSpace = 0;
             var tempOccupied = occupied.ToHashSet();
             var toCheck = new Queue<Point>();
             toCheck.Enqueue(pointToTest);
+            var tailPoint = snake?.Body.Last() ?? new Point(-1,-1);
+            tempOccupied.Remove(tailPoint);
             while (toCheck.Any())
             {
                 var point = toCheck.Dequeue();
                 if (tempOccupied.Contains(point))
                     continue;
+
+                if(point == tailPoint) //return max open spaces if this snake can follow their own tail. 
+                    return int.MaxValue; 
 
                 totalSpace++;
                 tempOccupied.Add(point);
@@ -175,7 +180,7 @@ Console.WriteLine(response1.Shout);
             foreach (var neighbor in openNeighs)
             {
                 var possibleCollisions = GetPossibleHeadCollision(gameStatusRequest, neighbor);
-                var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor);
+                var openSpace = GetOpenSpace(gameStatusRequest, occupied, neighbor, you);
                 if (possibleCollisions.Any())
                 {
                     if(possibleCollisions.Any(s => s.Length >= gameStatusRequest.You.Length))
@@ -213,9 +218,9 @@ Console.WriteLine(response1.Shout);
                 // Test to see if snake can trap other snakes in a small space.
                 var testOccupied = occupied.ToHashSet();
                 testOccupied.Add(neighbor);
-                var openSpacesWithTest = GetOpenSpacesDict(gameStatusRequest, testOccupied, otherSnakes);
+                var openSpacesWithTest = GetOpenSpacesDict(gameStatusRequest, testOccupied, otherSnakes, you);
                 var neighborsNeighbors = GetOpenNeighbors(gameStatusRequest, testOccupied, neighbor);
-                var myOpenSpaceWithTest = neighborsNeighbors.Any() ? neighborsNeighbors.Max(n => GetOpenSpace(gameStatusRequest, testOccupied, n)) : 0;
+                var myOpenSpaceWithTest = neighborsNeighbors.Any() ? neighborsNeighbors.Max(n => GetOpenSpace(gameStatusRequest, testOccupied, n, you)) : 0;
                     
                 // If going into this cell closes off a section for another snake, but doesn't close off 
                 if (openSpacesWithTest.Any(s => s.Value.OpenSpace < openSpaces[s.Key].OpenSpace && s.Value.OpenSpace < s.Value.Snake.Length) && myOpenSpaceWithTest > gameStatusRequest.You.Length)
@@ -285,7 +290,7 @@ Console.WriteLine(response1.Shout);
 
                 foreach(var neigh in openNeighs)
                 {
-                    var curOpenSpace = GetOpenSpace(gameStatusRequest, occupied, neigh);
+                    var curOpenSpace = GetOpenSpace(gameStatusRequest, occupied, neigh, you);
                     if(curOpenSpace > maxOpenSpace)
                     {
                         best = neigh;
@@ -316,7 +321,7 @@ Console.WriteLine(response1.Shout);
                         .FirstOrDefault(p =>
                         {
                             tempOcc.Remove(p);
-                            var openSp = GetOpenSpace(gameStatusRequest, tempOcc, gameStatusRequest.You.Head);
+                            var openSp = GetOpenSpace(gameStatusRequest, tempOcc, gameStatusRequest.You.Head, you);
                             return openSp > maxOpenSpace;
                         });
                     ind++;
@@ -417,7 +422,7 @@ Console.WriteLine(response.Shout);
                 .ToDictionary(s => s.Id, s =>
                  {
                      var tempOpenSpaces = GetOpenNeighbors(gameStatusRequest, occupied, s.Head);
-                     var max = tempOpenSpaces.Any() ? tempOpenSpaces.Max(z => GetOpenSpace(gameStatusRequest, occupied, z)) : 0;
+                     var max = tempOpenSpaces.Any() ? tempOpenSpaces.Max(z => GetOpenSpace(gameStatusRequest, occupied, z, s)) : 0;
                      var lookup = new OpenSpaceLookup { Snake = s, OpenSpace = max };
                      return lookup;
                  });
