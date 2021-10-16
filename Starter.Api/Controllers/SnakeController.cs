@@ -218,7 +218,7 @@ Console.WriteLine(response1.Shout);
                 // Test to see if snake can trap other snakes in a small space.
                 var testOccupied = occupied.ToHashSet();
                 testOccupied.Add(neighbor);
-                var openSpacesWithTest = GetOpenSpacesDict(gameStatusRequest, testOccupied, otherSnakes, you);
+                var openSpacesWithTest = GetOpenSpacesDict(gameStatusRequest, testOccupied, otherSnakes);
                 var neighborsNeighbors = GetOpenNeighbors(gameStatusRequest, testOccupied, neighbor);
                 var myOpenSpaceWithTest = neighborsNeighbors.Any() ? neighborsNeighbors.Max(n => GetOpenSpace(gameStatusRequest, testOccupied, n, you)) : 0;
                     
